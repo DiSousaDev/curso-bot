@@ -1,47 +1,17 @@
 const env = require('../.env')
 const Telegraf = require('telegraf')
+const moment = require('moment')
 const bot = new Telegraf(env.token)
 
-bot.start(ctx => {
-    const from = ctx.update.message.from
-    console.log(from)
-    ctx.reply(`Seja bem vindo, ${from.first_name}!`)
-})
-
-bot.on('text', ctx => ctx.reply(`Texto '${ctx.update.message.text}' recebido com sucesso!`))
-
-bot.on('location', ctx => {
-    const location = ctx.update.message.location
-    console.log(location)
-    ctx.reply(`Entendido, você está em
-    Lat.: ${location.latitude},
-    Lon.: ${location.longitude}!`)
-})
-
-bot.on('contact', ctx =>{
-    const contact = ctx.update.message.contact
-    console.log(contact)
-    ctx.reply(`Vou lembrar do(a) ${contact.first_name} (${contact.phone_number})`)
-})
-
-bot.on('voice', ctx => {
-    const voice = ctx.update.message.voice
-    console.log(voice)
-    ctx.reply(`Audio recebido, ele possui ${voice.duration} segundos`)
-})
-
-bot.on('photo', ctx => {
-    const photo = ctx.update.message.photo
-    console.log(photo)
-    photo.forEach((ph, i) => {
-        ctx.reply(`Photo ${i} tem resolução de ${ph.width} x ${ph.height}`)
-    })
-})
-
-bot.on('sticker', ctx => {
-    const sticker = ctx.update.message.sticker
-    console.log(sticker)
-    ctx.reply(`Você enviou o ${sticker.emoji} do conjunto ${sticker.set_name}`) 
+bot.hears('pizza', ctx => ctx.reply('Quero!'))
+bot.hears(['fígado', 'chuchu'], ctx => ctx.reply('Não Quero!'))
+bot.hears('🐷', ctx => ctx.reply('Bacon 😋'))
+bot.hears(/burguer/i, ctx => ctx.reply('Quero!'))
+bot.hears([/bocolis/i, /salada/i, /abobora/i], ctx => ctx.reply('Passo!'))
+bot.hears(/(\d{2}\/\d{2}\/\d{4})/, ctx => {
+    moment.locale('pt-BR')
+    const data = moment(ctx.match[1], 'DD/MM/YYYY')
+    ctx.reply(`${ctx.match[1]} cai em ${data.format('dddd')}`)
 })
 
 bot.startPolling()
